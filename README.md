@@ -129,9 +129,9 @@ query {
 ![generateAverage query with integer list input data and float result](src/main/resources/media/doc/Query_generateAverage.jpg)
 
 
-## CRUD operations on MongoDB
-This project integrate some basic endpoints to Create, Read/Get, Update and Delete data on non-relational database like MongoDB.
-Take in count that following commands must be executed on terminal once the project and MongoDB has run.
+## CRUD operations on H2/Postgres DB's
+This project integrate some basic endpoints to Create, Read/Get, Update and Delete data on relational database like H2 or PostgreSQL DB's.
+Take in count that following commands must be executed on terminal once the project and database has run.
 
 
 ### Using the Postman Client  

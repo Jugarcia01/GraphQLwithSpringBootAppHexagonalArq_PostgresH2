@@ -5,7 +5,7 @@ diferentes dependencias tales como lombok, graphql, mongodb, spqr entre otras.
 [![Arquitectura Hexagonal](src/main/resources/media/doc/ArqHexagonal/Explicit_Architecture.webp)](https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together)
 
 La arquitectura hexagonal es un patrón arquitectónico que tiene como objetivo hacer que los sistemas de software sean
-más flexibles, mantenibles y comprobables. En este patrón, el sistema se divide en tres capas principales:
+más flexibles, mantenibles y comprobables. En este patrón el sistema se divide en tres capas principales:
 Dominio, Aplicación e Infraestructura, cada una de las cuales se intercomunica a través de adaptadores y puertos de entrada y salida.
 
 En este tipo de arquitectura se parte desde el dominio. A continuación se describe brevemente cada capa:  
@@ -14,7 +14,7 @@ La capa de dominio es usada por la capa de aplicación.
 **Capa de Aplicación:** Contiene los casos de uso o servicios de aplicación.  
 **Capa de Infraestructura:** Contiene los controladores, adaptadores y puertos.
 
-Hay que tener en cuenta también que la arquitectura hexagonal también consta de dos lados a saber:
+Hay que tener en cuenta también que la arquitectura hexagonal consta de dos lados, a saber:
 **el driving side o lado conductor o lado primario** y **el secondary side o lado secundario**.
 Para tener una idea más clara de su interacción observe el diagrama:
 [![Flujo entre primary side y secondary side en arquitectura hexagonal](src/main/resources/media/doc/ArqHexagonal/ArquitecturaHexagonal_Elementos.png)](https://www.youtube.com/watch?v=CycNkSXfXy8)
@@ -39,7 +39,7 @@ different dependencies such as lombok, graphql, mongodb, spqr and others. The co
 based on content of diferent sources and courses that it referenced on Information Sources section.
 
 Hexagonal architecture is an architectural pattern that aims to make software systems
-more flexible, maintainable and verifiable. In this pattern, the system is divided into three main layers:
+more flexible, maintainable and verifiable. In this pattern the system is divided into three main layers:
 Domain, Application and Infrastructure, each of which intercommunicates through adapters and input and output ports.
 
 In this type of architecture, it starts from the domain. Each layer is briefly described below:
@@ -48,7 +48,7 @@ The domain layer is used by the application layer.
 **Application Layer:** Contains the use cases or application services.
 **Infrastructure Layer:** Contains drivers, adapters and ports.
 
-It must also be taken into account that the hexagonal architecture also consists of two sides namely:
+It must be taken into account that the hexagonal architecture also consists of two sides namely:
 **the driving side or primary side** and **the secondary side or secondary side**.
 To get a clearer idea of their interaction, look at the diagram:
 

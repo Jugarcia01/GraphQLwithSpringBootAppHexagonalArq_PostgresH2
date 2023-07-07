@@ -70,7 +70,7 @@ public class CustomerUseCase implements CustomerInputPort {
               .build();
           entityRepository.updateEntity(updateCustomer);
           log.info("Update customer.");
-          return new ResponseEntity<>(customer, HttpStatus.OK);
+          return new ResponseEntity<>(updateCustomer, HttpStatus.OK);
         }
       }
     } catch (Exception e) {
@@ -85,7 +85,7 @@ public class CustomerUseCase implements CustomerInputPort {
   @Override
   public ResponseEntity<Customer> getCustomerById(UUID uuid) {
     try {
-      Customer foundCustomer = entityRepository.getEntityById(uuid, Customer.class);
+      Customer foundCustomer = entityRepository.getEntityByUuid(uuid, Customer.class);
       if (isNull(foundCustomer)) {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
       }

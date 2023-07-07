@@ -1,6 +1,7 @@
 package com.jgo.demo_graphql.infrastructure.outputadapter.postgres;
 
 import com.jgo.demo_graphql.domain.repository.postgres.CustomerRepositoryJpa;
+import com.jgo.demo_graphql.domain.repository.postgres.OrderRepositoryJpa;
 import com.jgo.demo_graphql.infrastructure.outputport.EntityRepository;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +34,9 @@ public class PostgresRepositoryImpl implements EntityRepository {
   @Autowired
   CustomerRepositoryJpa customerRepositoryJpa;
 
+  @Autowired
+  OrderRepositoryJpa orderRepositoryJpa;
+
   @Override
   @Transactional
   public <T> T createEntity(T entity) {
@@ -41,6 +45,7 @@ public class PostgresRepositoryImpl implements EntityRepository {
 
     // To H2 database use:
     entityManager.persist(entity);
+    entityManager.flush(); // Force the generation of the id value
     return entity;
   }
 
@@ -55,9 +60,14 @@ public class PostgresRepositoryImpl implements EntityRepository {
   }
 
   @Override
-  @Transactional
-  public <T> T getEntityById(UUID id, Class<T> clazz) {
+  public <T> T getEntityById(Long id, Class<T> clazz) {
     return entityManager.find(clazz, id);
+  }
+
+  @Override
+  @Transactional
+  public <T> T getEntityByUuid(UUID uuid, Class<T> clazz) {
+    return entityManager.find(clazz, uuid);
   }
 
   @Override
@@ -73,7 +83,19 @@ public class PostgresRepositoryImpl implements EntityRepository {
 
   @Override
   @Transactional
-  public <T> T deleteEntityById(UUID id, Class<T> clazz) {
+  public <T> T deleteEntityById(UUID uuid, Class<T> clazz) {
+    T entity = entityManager.find(clazz, uuid);
+    if (entity != null) {
+      entityManager.remove(entity);
+      return entity;
+    } else {
+      throw new EntityNotFoundException("Entity with Id: " + uuid + " not found");
+    }
+  }
+
+  @Override
+  @Transactional
+  public <T> T deleteEntityById(Long id, Class<T> clazz) {
     T entity = entityManager.find(clazz, id);
     if (entity != null) {
       entityManager.remove(entity);

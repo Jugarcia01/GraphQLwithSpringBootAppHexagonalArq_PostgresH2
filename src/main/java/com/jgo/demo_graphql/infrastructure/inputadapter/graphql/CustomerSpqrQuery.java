@@ -78,7 +78,7 @@ public class CustomerSpqrQuery {
 
   - Example delete request; before to use MODIFY AND CHECK THAT ID EXIST ON YOUR DATABASE!:
     mutation {
-      delete(uuid: "1adfa52b-a57c-3b40-8da4-388526f6595d")
+      deleteCustomer(uuid: "1adfa52b-a57c-3b40-8da4-388526f6595d")
     }
 
   */
@@ -139,7 +139,6 @@ public class CustomerSpqrQuery {
 
   /**
    * Get all customers.
-   *
    * @return list of customers.
    */
   @GraphQLQuery(name = "customers", description = "Get All Customers")
@@ -153,9 +152,9 @@ public class CustomerSpqrQuery {
    * @param uuid
    * @return String message of result
    */
-  @GraphQLMutation(name = "delete", description = "Deletes the customer given its uuid")
+  @GraphQLMutation(name = "deleteCustomer", description = "Deletes the customer given its uuid")
   public String deleteCustomer(@GraphQLNonNull UUID uuid) {
-    log.info("deleteById in process...");
+    log.info("deleteCustomerById in process...");
     Boolean result = customerInputPort.deleteCustomerById(uuid);
     if (Boolean.TRUE.equals(result)) {
       return "Customer with uuid: " + uuid + " was successfully deleted!";

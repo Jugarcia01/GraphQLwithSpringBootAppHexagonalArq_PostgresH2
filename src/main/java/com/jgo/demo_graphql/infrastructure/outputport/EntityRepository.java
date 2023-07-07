@@ -9,11 +9,15 @@ public interface EntityRepository {
 
   public <T> T updateEntity(T entity);
 
-  public <T> T getEntityById(UUID id, Class<T> clazz);
+  public <T> T getEntityById(Long id, Class<T> clazz);
+
+  public <T> T getEntityByUuid(UUID id, Class<T> clazz);
 
   public <T> List<T> getEntityByEmail(String email, Class<T> clazz);
 
   public <T> T deleteEntityById(UUID id, Class<T> clazz);
+
+  public <T> T deleteEntityById(Long id, Class<T> clazz);
 
   public <T> List<T> getAllEntities(Class<T> clazz);
 

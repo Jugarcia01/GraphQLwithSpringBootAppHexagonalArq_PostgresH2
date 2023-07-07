@@ -1,5 +1,6 @@
 package com.jgo.demo_graphql.application.dto;
 
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +19,7 @@ public class CustomerDto {
   private String email;
   private String name;
   private String lastName;
+  private List<OrderDto> orders;
 
 }
 

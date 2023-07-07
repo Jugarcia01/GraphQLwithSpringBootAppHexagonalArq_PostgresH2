@@ -29,10 +29,18 @@ public class GraphQLController {
   private final GraphQL graphQL;
 
   private CustomerSpqrQuery customerSpqrQuery;
+  private OrderSpqrQuery orderSpqrQuery;
+  private SaleDetailsSpqrQuery saleDetailsSpqrQuery;
 
   @Autowired
-  public GraphQLController(GraphQLConfiguration graphQLConfiguration, CustomerSpqrQuery customerSpqrQuery) {
+  public GraphQLController(GraphQLConfiguration graphQLConfiguration,
+                           CustomerSpqrQuery customerSpqrQuery,
+                           OrderSpqrQuery orderSpqrQuery,
+                           SaleDetailsSpqrQuery saleDetailsSpqrQuery
+  ) {
     this.customerSpqrQuery = customerSpqrQuery;
+    this.orderSpqrQuery = orderSpqrQuery;
+    this.saleDetailsSpqrQuery = saleDetailsSpqrQuery;
 
     graphQL = graphQLConfiguration.graphQLSchemaConfiguration(entitiesQueryArray());
     log.info("Generated GraphQL schema using SPQR");
@@ -42,6 +50,8 @@ public class GraphQLController {
     List<Object> listQuery = new ArrayList<>();
     // Add the necessary entities to include in the schema
     listQuery.add(customerSpqrQuery);
+    listQuery.add(orderSpqrQuery);
+    listQuery.add(saleDetailsSpqrQuery);
 
     return listQuery.toArray();
   }

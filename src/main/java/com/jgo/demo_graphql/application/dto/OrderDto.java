@@ -22,5 +22,4 @@ public class OrderDto {
   private CustomerDto customer;
   private List<SaleDetailsDto> saleDetails;
   private BigDecimal totalOrder;
-
 }

@@ -1,14 +1,20 @@
 package com.jgo.demo_graphql.infrastructure.configuration;
 
+import com.jgo.demo_graphql.application.dto.CustomerDto;
+import com.jgo.demo_graphql.application.dto.OrderDto;
+import com.jgo.demo_graphql.application.dto.SaleDetailsDto;
 import com.jgo.demo_graphql.domain.model.Customer;
 import com.mongodb.DuplicateKeyException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Component;
 
 @Slf4j
 //-- enable / uncomment the annotation for MongoDB to insert initial data:
@@ -23,7 +29,80 @@ public class InsertDataMongo {
   }
 
   @PostConstruct
-  public void insertCustomers() {
+  public void insertData() {
+
+    log.info("Executing insertData");
+    CustomerDto customer1 = CustomerDto.builder()
+        .uuid(UUID.fromString("729c5d13-261a-4b46-bb11-9af04cb2cd3e"))
+        .email("bbunny@mail.com")
+        .name("Bugs")
+        .lastName("Bunny")
+
+        .build();
+
+    OrderDto order1 = OrderDto.builder()
+        .id(1L)
+        .name("Order01")
+        .description("This is the first order.")
+        .customer(customer1)
+        .totalOrder(BigDecimal.valueOf(100.0))
+        .build();
+
+    SaleDetailsDto saleDetails1A = SaleDetailsDto.builder()
+        .id(1L)
+        .sku("0001")
+        .quantity(2L)
+        .unitPrice(BigDecimal.valueOf(50.0))
+        .totalPrice(BigDecimal.valueOf(100.0))
+        .discountAmount(BigDecimal.ZERO)
+        .order_id(order1.getId())
+        .build();
+
+    SaleDetailsDto saleDetails1B = SaleDetailsDto.builder()
+        .id(2L)
+        .sku("0002")
+        .quantity(1L)
+        .unitPrice(BigDecimal.valueOf(20.0))
+        .totalPrice(BigDecimal.valueOf(20.0))
+        .discountAmount(BigDecimal.ZERO)
+        .order_id(order1.getId())
+        .build();
+
+    order1.setSaleDetails(List.of(saleDetails1A, saleDetails1B));
+
+    OrderDto order2 = OrderDto.builder()
+        .id(1L)
+        .name("Order02")
+        .description("This is the second order.")
+        .customer(customer1)
+        .totalOrder(BigDecimal.valueOf(100.0))
+        .build();
+
+    SaleDetailsDto saleDetails2A = SaleDetailsDto.builder()
+        .id(3L)
+        .sku("0003")
+        .quantity(2L)
+        .unitPrice(BigDecimal.valueOf(30.0))
+        .totalPrice(BigDecimal.valueOf(60.0))
+        .discountAmount(BigDecimal.ZERO)
+        .order_id(order2.getId())
+        .build();
+
+    SaleDetailsDto saleDetails2B = SaleDetailsDto.builder()
+        .id(4L)
+        .sku("0004")
+        .quantity(3L)
+        .unitPrice(BigDecimal.valueOf(10.0))
+        .totalPrice(BigDecimal.valueOf(30.0))
+        .discountAmount(BigDecimal.ZERO)
+        .order_id(order2.getId())
+        .build();
+
+    order2.setSaleDetails(List.of(saleDetails2A, saleDetails2B));
+
+    customer1.setOrders(List.of(order1, order2));
+
+    /*
     log.info("Executing insertCustomers");
     Customer[] customers = {
         new Customer(UUID.fromString("729c5d13-261a-4b46-bb11-9af04cb2cd3e"), "bbunny@mail.com", "Bugs", "Bunny"),
@@ -50,6 +129,7 @@ public class InsertDataMongo {
         }
       }
     }
+    */
 
   }
 

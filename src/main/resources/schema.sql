@@ -1,6 +1,14 @@
 CREATE SCHEMA IF NOT EXISTS PUBLIC;
 USE PUBLIC;
 
+DROP TABLE IF EXISTS hibernate_sequence;
+CREATE TABLE hibernate_sequence (
+    next_val bigint
+);
+INSERT INTO hibernate_sequence VALUES (1);
+
+DROP TABLE IF EXISTS SALEDETAILS;
+DROP TABLE IF EXISTS ORDERS;
 DROP TABLE IF EXISTS CUSTOMER;
 
 CREATE TABLE IF NOT EXISTS CUSTOMER (
@@ -8,4 +16,24 @@ CREATE TABLE IF NOT EXISTS CUSTOMER (
   email VARCHAR(100) NOT NULL,
   name VARCHAR(50) NOT NULL,
   lastName VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE ORDERS (
+  id BIGINT PRIMARY KEY,
+  name VARCHAR(200),
+  description VARCHAR(255),
+  customer_uuid VARCHAR(160) NOT NULL,
+  totalOrder NUMERIC(18,2),
+  FOREIGN KEY (customer_uuid) REFERENCES customer(uuid)
+);
+
+CREATE TABLE SALEDETAILS (
+  id BIGINT PRIMARY KEY,
+  sku VARCHAR(100),
+  quantity BIGINT,
+  unitPrice NUMERIC(18,2),
+  totalPrice NUMERIC(18,2),
+  discountAmount NUMERIC(18,2),
+  order_id BIGINT,
+  FOREIGN KEY (order_id) REFERENCES orders(id)
 );

@@ -7,9 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Component;
 
 //-- enable / uncomment the annotation to use Mongo repo:
 // @Component("mongodbRepository")
@@ -32,9 +30,17 @@ public class MongodbRepositoryImpl implements EntityRepository {
   }
 
   @Override
-  public <T> T getEntityById(UUID id, Class<T> clazz) {
+  public <T> T getEntityById(Long id, Class<T> clazz) {
     if (mongoRepository.findById(id).isPresent()) {
       return (T) mongoRepository.findById(id).get();
+    }
+    return null;
+  }
+
+  @Override
+  public <T> T getEntityByUuid(UUID uuid, Class<T> clazz) {
+    if (mongoRepository.findById(uuid).isPresent()) {
+      return (T) mongoRepository.findById(uuid).get();
     }
     return null;
   }
@@ -48,7 +54,16 @@ public class MongodbRepositoryImpl implements EntityRepository {
     }
   }
 
-  public <T> T deleteEntityById(UUID id, Class<T> clazz) {
+  @Override
+  public <T> T deleteEntityById(UUID uuid, Class<T> clazz) {
+    final T entity = (T) mongoRepository.findById(uuid).get();
+    Preconditions.checkState(entity != null);
+    mongoRepository.delete(entity);
+    return entity;
+  }
+
+  @Override
+  public <T> T deleteEntityById(Long id, Class<T> clazz) {
     final T entity = (T) mongoRepository.findById(id).get();
     Preconditions.checkState(entity != null);
     mongoRepository.delete(entity);

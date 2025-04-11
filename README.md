@@ -2,7 +2,7 @@
 Este es un ejemplo de cómo usar **GraphQL y REST API con Java Spring Boot** en un proyecto de **Arquitectura Hexagonal** empleando
 diferentes dependencias tales como lombok, graphql, spqr entre otras y persistiendo los datos en base de datos (ya sea postgres/h2 o mongodb).
 
-[![Arquitectura Hexagonal](media/doc/ArqHexagonal/Explicit_Architecture.webp)](https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together)
+[![Arquitectura Hexagonal](src/main/resources/media/doc/ArqHexagonal/Explicit_Architecture.webp)](https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together)
 
 La arquitectura hexagonal es un patrón arquitectónico que tiene como objetivo hacer que los sistemas de software sean
 más flexibles, mantenibles y escalables. En este patrón el sistema se divide en tres capas principales:
@@ -17,7 +17,7 @@ La capa de dominio es usada por la capa de aplicación.
 Hay que tener en cuenta también que la arquitectura hexagonal consta de dos lados, a saber:
 **el driving side o lado conductor o lado primario** y **el secondary side o lado secundario**.
 Para tener una idea más clara de su interacción observe el diagrama:
-[![Flujo entre primary side y secondary side en arquitectura hexagonal](media/doc/ArqHexagonal/ArquitecturaHexagonal_Elementos.png)](https://www.youtube.com/watch?v=CycNkSXfXy8)
+[![Flujo entre primary side y secondary side en arquitectura hexagonal](src/main/resources/media/doc/ArqHexagonal/ArquitecturaHexagonal_Elementos.png)](https://www.youtube.com/watch?v=CycNkSXfXy8)
 
 En el **Primary/Driving Side el flujo sera** de la siguiente manera:
 * El Input Adapter hace uso del Input Port
@@ -94,8 +94,8 @@ mvn spring-boot:run
 - then Run this project on IntelliJ IDE and Open in your Chrome browser the Altair GraphQL Client, set the project URL in this case http://localhost:8080/graphql type your query and click on the play button "Send Request" to execute it.
 ![Altair GraphQL Client][Altair GraphQL Client]
  
-[Altair GraphQL Extention]: media/doc/AltairChromeExtension.jpg
-[Altair GraphQL Client]: media/doc/AltairGraphQLClient_Run.jpg
+[Altair GraphQL Extention]: src/main/resources/media/doc/AltairChromeExtension.jpg
+[Altair GraphQL Client]: src/main/resources/media/doc/AltairGraphQLClient_Run.jpg
 
 ## List of GraphQL queries
 First execute the project, open a console and type the following command:
@@ -113,7 +113,7 @@ query {
   }
 }
 ```
-![firstQuery with any data GraphQL](media/doc/Query_firstQuery.jpg)
+![firstQuery with any data GraphQL](src/main/resources/media/doc/Query_firstQuery.jpg)
 
 - This is a query similar, but including more data on request: [GraphQL - Customer with more data query](http://localhost:8080/graphiql?query=query%20%7B%0A%20%20customers%20%7B%0A%20%20%20%20uuid%0A%20%20%20%20email%0A%20%20%20%20name%0A%20%20%20%20lastName%0A%20%20%20%20orders%20%7B%0A%20%20%20%20%20%20id%0A%20%20%20%20%20%20description%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D%0A)
 ```graphql
@@ -130,7 +130,7 @@ query {
   }
 }
 ```
-![Similar query with more requested data GraphQL](media/doc/Query_secondQuery.jpg)
+![Similar query with more requested data GraphQL](src/main/resources/media/doc/Query_secondQuery.jpg)
 
 - Now use this Mutation request to create a Customer record: [GraphQL - Create a Customer](http://localhost:8080/graphiql?query=mutation%20%7B%0A%09createCustomer(%0A%09%09lastName%3A%20%22Doe%22%0A%09%09name%3A%20%22James%22%0A%09%09email%3A%20%22jdoe%40mail.com%22%0A%20%20)%7B%0A%20%20%20%20uuid%0A%20%20%20%20lastName%0A%20%20%20%20name%0A%20%20%20%20email%0A%20%20%7D%0A%7D%0A)
 ```graphql
@@ -147,7 +147,7 @@ mutation {
   }
 }
 ```
-![ceateCustomer mutation](media/doc/Mutation_createCustomer.jpg)
+![ceateCustomer mutation](src/main/resources/media/doc/Mutation_createCustomer.jpg)
 
 - Updating a Customer record:
 
@@ -159,7 +159,7 @@ mutation {
   )
 }
 ```
-![deleteCustomerByEmail mutation](media/doc/Mutation_deleteCustomerByEmail.jpg)
+![deleteCustomerByEmail mutation](src/main/resources/media/doc/Mutation_deleteCustomerByEmail.jpg)
 
 
 ## CRUD operations on H2/Postgres DB's
@@ -208,7 +208,7 @@ curl --location --request DELETE http://localhost:8080/api/customer/delete/1adfa
 ```
 NOTE: The record Pato Lucas in the Data Base must be deleted
 ('1adfa52b-a57c-3b40-8da4-388526f6595b', 'plucas@mail.com', 'Pato', 'Lucas')
-![Delete a customer record](media/doc/Delete_record_DB.jpg)
+![Delete a customer record](src/main/resources/media/doc/Delete_record_DB.jpg)
 
 ## Information Sources:
 This content of this project is based on the following web resources:

@@ -1,11 +1,11 @@
 # Ejemplo de proyecto Java Spring Boot con GraphQL y REST API con PostgreSQL / H2 empleando Arquitectura Hexagonal
-Este es un ejemplo simple de cómo usar **GraphQL y REST API con Java Spring Boot** en un proyecto de **Arquitectura Hexagonal** empleando
-diferentes dependencias tales como lombok, graphql, mongodb, spqr entre otras.
+Este es un ejemplo de cómo usar **GraphQL y REST API con Java Spring Boot** en un proyecto de **Arquitectura Hexagonal** empleando
+diferentes dependencias tales como lombok, graphql, spqr entre otras y persistiendo los datos en base de datos (ya sea postgres/h2 o mongodb).
 
-[![Arquitectura Hexagonal](src/main/resources/media/doc/ArqHexagonal/Explicit_Architecture.webp)](https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together)
+[![Arquitectura Hexagonal](media/doc/ArqHexagonal/Explicit_Architecture.webp)](https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together)
 
 La arquitectura hexagonal es un patrón arquitectónico que tiene como objetivo hacer que los sistemas de software sean
-más flexibles, mantenibles y comprobables. En este patrón el sistema se divide en tres capas principales:
+más flexibles, mantenibles y escalables. En este patrón el sistema se divide en tres capas principales:
 Dominio, Aplicación e Infraestructura, cada una de las cuales se intercomunica a través de adaptadores y puertos de entrada y salida.
 
 En este tipo de arquitectura se parte desde el dominio. A continuación se describe brevemente cada capa:  
@@ -17,7 +17,7 @@ La capa de dominio es usada por la capa de aplicación.
 Hay que tener en cuenta también que la arquitectura hexagonal consta de dos lados, a saber:
 **el driving side o lado conductor o lado primario** y **el secondary side o lado secundario**.
 Para tener una idea más clara de su interacción observe el diagrama:
-[![Flujo entre primary side y secondary side en arquitectura hexagonal](src/main/resources/media/doc/ArqHexagonal/ArquitecturaHexagonal_Elementos.png)](https://www.youtube.com/watch?v=CycNkSXfXy8)
+[![Flujo entre primary side y secondary side en arquitectura hexagonal](media/doc/ArqHexagonal/ArquitecturaHexagonal_Elementos.png)](https://www.youtube.com/watch?v=CycNkSXfXy8)
 
 En el **Primary/Driving Side el flujo sera** de la siguiente manera:
 * El Input Adapter hace uso del Input Port
@@ -33,13 +33,13 @@ En cambio, el lado secundario se encarga de adaptar esas tecnologías y detalles
 Esto facilita el intercambio y la evolución de las implementaciones en el lado secundario sin afectar la lógica de negocio en el lado conductor.
 
 
-# GraphQL and REST API with Java Spring Boot Example using Hexagonal Architecture
-This is a simple example of how to use GraphQL with Spring Boot Java in a Hexagonal Architecture project using
-different dependencies such as lombok, graphql, mongodb, spqr and others. The code source of this project is
-based on content of diferent sources and courses that it referenced on Information Sources section.
+# GraphQL and REST API with Java Spring Boot Example using Hexagonal Architecture and Postgres / H2 database
+This is an example of how to use GraphQL with Spring Boot Java in a Hexagonal Architecture project using
+different dependencies such as lombok, graphql, spqr among others and using a database (either postgres/h2 or mongodb). 
+This project is based on content of diferent sources and courses that these are referenced on Information Sources section.
 
 Hexagonal architecture is an architectural pattern that aims to make software systems
-more flexible, maintainable and verifiable. In this pattern the system is divided into three main layers:
+more flexible, maintainable and scalable. In this pattern the system is divided into three main layers:
 Domain, Application and Infrastructure, each of which intercommunicates through adapters and input and output ports.
 
 In this type of architecture, it starts from the domain. Each layer is briefly described below:
@@ -50,7 +50,6 @@ The domain layer is used by the application layer.
 
 It must be taken into account that the hexagonal architecture also consists of two sides namely:
 **the driving side or primary side** and **the secondary side or secondary side**.
-To get a clearer idea of their interaction, look at the diagram:
 
 In the **Primary/Driving Side the flow will be** as follows:
 * The Input Adapter makes use of the Input Port
@@ -83,50 +82,84 @@ mvn compile
 mvn spring-boot:run
 ```
 
+
 ## How to test queries of this project?
 ### Using the GraphiQL
 - Once the project is Run then Open your browser and go to the following URL:  
 [http://localhost:8080/graphiql](http://localhost:8080/graphiql)
 
-### Using the Altair GraphQL Client
+### Other alternative using the Altair GraphQL Client
 - First install the [Altair GraphQL Client](https://chrome.google.com/webstore/search/altair%20graphql%20client?hl=es-419) from the Chrome Web Store
 ![Altair GraphQL Chrome Extention][Altair GraphQL Extention] <br /><br />
 - then Run this project on IntelliJ IDE and Open in your Chrome browser the Altair GraphQL Client, set the project URL in this case http://localhost:8080/graphql type your query and click on the play button "Send Request" to execute it.
 ![Altair GraphQL Client][Altair GraphQL Client]
  
-[Altair GraphQL Extention]: src/main/resources/media/doc/AltairChromeExtension.jpg
-[Altair GraphQL Client]: src/main/resources/media/doc/AltairGraphQLClient_Run.jpg
+[Altair GraphQL Extention]: media/doc/AltairChromeExtension.jpg
+[Altair GraphQL Client]: media/doc/AltairGraphQLClient_Run.jpg
 
 ## List of GraphQL queries
-You can type the following query and click on the play button to execute it:
-- Query with no input data on request:
-```graphql
- query {   
-   firstQuery  
- }
-```
-![firstQuery with any data GraphQL](src/main/resources/media/doc/Query_firstQuery.jpg)
+First execute the project, open a console and type the following command:
 
-- Query with input data on request:
+Verify that it's running correctly:
+
+
+You can type the following query and click on the play button to execute it:
+- Query with no input data on request: [GraphQL - Customer query](http://localhost:8080/graphiql?query=query%20%7B%0A%20%20customers%20%7B%0A%20%20%20%20uuid%0A%20%20%20%20email%0A%20%20%7D%0A%7D%0A)
 ```graphql
 query {
-  generateFullName(
-    firstName: "John", 
-    lastName: "Connor"
-    )
+  customers {
+    uuid
+    email
+  }
 }
 ```
-![generateFullName query with input data](src/main/resources/media/doc/Query_generateFullName.jpg)
+![firstQuery with any data GraphQL](media/doc/Query_firstQuery.jpg)
 
-- Query with array input of integers data on request and float result:
+- This is a query similar, but including more data on request: [GraphQL - Customer with more data query](http://localhost:8080/graphiql?query=query%20%7B%0A%20%20customers%20%7B%0A%20%20%20%20uuid%0A%20%20%20%20email%0A%20%20%20%20name%0A%20%20%20%20lastName%0A%20%20%20%20orders%20%7B%0A%20%20%20%20%20%20id%0A%20%20%20%20%20%20description%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D%0A)
 ```graphql
 query {
-  generateAverage (
-    numbers : [1,3,4,5,7,9]
+  customers {
+    uuid
+    email
+    name
+    lastName
+    orders {
+      id
+      description
+    }
+  }
+}
+```
+![Similar query with more requested data GraphQL](media/doc/Query_secondQuery.jpg)
+
+- Now use this Mutation request to create a Customer record: [GraphQL - Create a Customer](http://localhost:8080/graphiql?query=mutation%20%7B%0A%09createCustomer(%0A%09%09lastName%3A%20%22Doe%22%0A%09%09name%3A%20%22James%22%0A%09%09email%3A%20%22jdoe%40mail.com%22%0A%20%20)%7B%0A%20%20%20%20uuid%0A%20%20%20%20lastName%0A%20%20%20%20name%0A%20%20%20%20email%0A%20%20%7D%0A%7D%0A)
+```graphql
+mutation {
+	createCustomer(
+		lastName: "Doe"
+		name: "James"
+		email: "jdoe@mail.com"
+  ){
+    uuid
+    lastName
+    name
+    email
+  }
+}
+```
+![ceateCustomer mutation](media/doc/Mutation_createCustomer.jpg)
+
+- Updating a Customer record:
+
+- Deleting a Customer record by email field: [GraphQL - Deleting a customer](http://localhost:8080/graphiql?query=mutation%20%7B%0A%20%20deleteCustomerByEmail(%0A%20%20%20%20email%3A%22sgonzales%40mail.com%22%0A%20%20)%0A%7D%0A)
+```graphql
+mutation {
+  deleteCustomerByEmail(
+    email:"sgonzales@mail.com"
   )
 }
 ```
-![generateAverage query with integer list input data and float result](src/main/resources/media/doc/Query_generateAverage.jpg)
+![deleteCustomerByEmail mutation](media/doc/Mutation_deleteCustomerByEmail.jpg)
 
 
 ## CRUD operations on H2/Postgres DB's
@@ -136,7 +169,7 @@ Take in count that following commands must be executed on terminal once the proj
 
 ### Using the Postman Client  
 - Command terminal to create a Customer:
-```curl
+```shell curl
 curl --location --request POST 'http://localhost:8080/api/customer/add' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -148,7 +181,7 @@ curl --location --request POST 'http://localhost:8080/api/customer/add' \
 ```
 
 - Command terminal to update a Customer:
-```curl
+```shell curl
 curl --location --request POST 'http://localhost:8080/api/customer/update' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -160,19 +193,22 @@ curl --location --request POST 'http://localhost:8080/api/customer/update' \
 ```
 
 - Command to get/find a Customer:
-```curl
-curl --location --request GET 'http://localhost:8080/api/customer/find/2'
+```shell curl
+curl --location --request GET http://localhost:8080/api/customer/find/2
 ```
 
 - Command to find all Customers:
-```curl
-curl --location --request GET 'http://localhost:8080/api/customer/findAll'
+```shell curl
+curl --location --request GET http://localhost:8080/api/customer/findAll
 ```
 
 - Command to delete a Customer:
-```curl
-curl --location --request DELETE 'http://localhost:8080/api/customer/delete/1'
+```shell curl
+curl --location --request DELETE http://localhost:8080/api/customer/delete/1adfa52b-a57c-3b40-8da4-388526f6595b
 ```
+NOTE: The record Pato Lucas in the Data Base must be deleted
+('1adfa52b-a57c-3b40-8da4-388526f6595b', 'plucas@mail.com', 'Pato', 'Lucas')
+![Delete a customer record](media/doc/Delete_record_DB.jpg)
 
 ## Information Sources:
 This content of this project is based on the following web resources:

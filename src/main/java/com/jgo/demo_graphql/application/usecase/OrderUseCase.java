@@ -4,14 +4,13 @@ import com.jgo.demo_graphql.application.dto.OrderDto;
 import com.jgo.demo_graphql.domain.model.Order;
 import com.jgo.demo_graphql.infrastructure.inputport.OrderInputPort;
 import com.jgo.demo_graphql.infrastructure.outputport.EntityRepository;
-import java.util.List;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.UUID;
 
 import static java.util.Objects.isNull;
 
@@ -25,15 +24,16 @@ public class OrderUseCase implements OrderInputPort {
   // WARNING: If happen this Error: No property getOne found for type Order!
   // Check in Order.java have the Postgres anotations actived: @Entity, @javax.persistence.Id
   // Enable for H2 and Postgres
-  private static final String REPOSITORY = "postgresRepository";
+  // private static final String REPOSITORY = "${repository.type}";
 
   private EntityRepository entityRepository;
 
-  @Autowired
-  public OrderUseCase(@Qualifier(REPOSITORY) EntityRepository entityRepository) {
+  /* public OrderUseCase(@Qualifier(REPOSITORY) EntityRepository entityRepository) {
+    this.entityRepository = entityRepository;
+  } */
+  public OrderUseCase(EntityRepository entityRepository) {
     this.entityRepository = entityRepository;
   }
-
   @Override
   public ResponseEntity<Order> createOrder(OrderDto orderDto) {
     return null;

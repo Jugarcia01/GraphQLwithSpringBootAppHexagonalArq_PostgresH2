@@ -114,7 +114,7 @@ public class CustomerSpqrQuery {
   public Customer updateCustomer(@GraphQLNonNull UUID uuid, @GraphQLNonNull String email,
                                  @GraphQLNonNull String name, String lastName) {
     CustomerDto customerDto = CustomerDto.builder().uuid(uuid).email(email).name(name).lastName(lastName).build();
-    return customerInputPort.createCustomer(customerDto).getBody();
+    return customerInputPort.updateCustomer(customerDto).getBody();
   }
 
   /**
@@ -152,7 +152,7 @@ public class CustomerSpqrQuery {
    * @param uuid
    * @return String message of result
    */
-  @GraphQLMutation(name = "deleteCustomer", description = "Deletes the customer given its uuid")
+  @GraphQLMutation(name = "deleteCustomerById", description = "Deletes the customer given its uuid")
   public String deleteCustomer(@GraphQLNonNull UUID uuid) {
     log.info("deleteCustomerById in process...");
     Boolean result = customerInputPort.deleteCustomerById(uuid);
@@ -160,6 +160,21 @@ public class CustomerSpqrQuery {
       return "Customer with uuid: " + uuid + " was successfully deleted!";
     } else {
       return "Error occurred when trying to deleted Customer with uuid:" + uuid + " or record don't exist.";
+    }
+  }
+  /**
+   * Deletes the customer given its email
+   * @param email
+   * @return String message of result
+   */
+  @GraphQLMutation(name = "deleteCustomerByEmail", description = "Deletes the customer given its email")
+  public String deleteCustomerByEmail(@GraphQLNonNull String email) {
+    log.info("deleteCustomerByEmail in process...");
+    Boolean result = customerInputPort.deleteCustomerByEmail(email);
+    if (Boolean.TRUE.equals(result)) {
+      return "Customer with email: " + email + " was successfully deleted!";
+    } else {
+      return "Error occurred when trying to deleted Customer with email:" + email + " or record don't exist.";
     }
   }
 

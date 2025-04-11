@@ -4,7 +4,6 @@ import com.jgo.demo_graphql.application.dto.CustomerDto;
 import com.jgo.demo_graphql.domain.model.Customer;
 import com.jgo.demo_graphql.infrastructure.inputport.CustomerInputPort;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,9 +31,14 @@ public class CustomerApi {
     return customerInputPort.createCustomer(customerDto);
   }
 
-  @GetMapping(value = "/find/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Customer> getCustomer(@PathVariable UUID id) {
+  @GetMapping(value = "/findById/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Customer> getCustomer(@RequestBody UUID id) {
     return customerInputPort.getCustomerById(id);
+  }
+
+  @GetMapping(value = "/find/{email}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Customer> getCustomerByEmail(@PathVariable String email) {
+    return customerInputPort.getCustomerByEmail(email);
   }
 
   @GetMapping(value = "/find", produces = MediaType.APPLICATION_JSON_VALUE)

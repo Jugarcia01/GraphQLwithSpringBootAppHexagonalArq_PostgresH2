@@ -1,4 +1,4 @@
-package com.jgo.demo_graphql.domain.repository.postgres;
+package com.jgo.demo_graphql.domain.repository.relational;
 
 import com.jgo.demo_graphql.domain.model.SaleDetails;
 import java.util.List;
@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SaleDetailsRepositoryJpa extends JpaRepository<SaleDetails, Id> {
 
-  Optional<List<SaleDetails>> findByOrder_id(Long id);
+  Optional<List<SaleDetails>> findByOrderId(Long id);
 
 }

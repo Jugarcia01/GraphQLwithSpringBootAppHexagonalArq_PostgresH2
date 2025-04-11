@@ -1,4 +1,4 @@
-package com.jgo.demo_graphql.domain.repository.postgres;
+package com.jgo.demo_graphql.domain.repository.relational;
 
 import com.jgo.demo_graphql.domain.model.Order;
 import javax.persistence.Id;

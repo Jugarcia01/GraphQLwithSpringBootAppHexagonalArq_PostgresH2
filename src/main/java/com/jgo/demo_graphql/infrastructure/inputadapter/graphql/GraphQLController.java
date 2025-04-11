@@ -1,6 +1,7 @@
 package com.jgo.demo_graphql.infrastructure.inputadapter.graphql;
 
 import com.jgo.demo_graphql.infrastructure.configuration.GraphQLConfiguration;
+import com.jgo.demo_graphql.infrastructure.configuration.CustomGraphQLResponseProcessor;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
@@ -17,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 /*
-  Controller to generate the GraphQL schema with SPQR witch takes the code-first approach,
-  by generating the schema from the existing model in Java.
+  Controller to generate the GraphQL schema with SPQR witch takes the
+  code-first approach, by generating the schema from the existing model in Java.
   GraphQL SPQR (GraphQL Schema Publisher & Query Resolver)
  */
 
@@ -27,20 +28,22 @@ import java.util.Map;
 public class GraphQLController {
 
   private final GraphQL graphQL;
-
   private CustomerSpqrQuery customerSpqrQuery;
   private OrderSpqrQuery orderSpqrQuery;
   private SaleDetailsSpqrQuery saleDetailsSpqrQuery;
+  private final CustomGraphQLResponseProcessor responseProcessor;
 
   @Autowired
   public GraphQLController(GraphQLConfiguration graphQLConfiguration,
                            CustomerSpqrQuery customerSpqrQuery,
                            OrderSpqrQuery orderSpqrQuery,
-                           SaleDetailsSpqrQuery saleDetailsSpqrQuery
+                           SaleDetailsSpqrQuery saleDetailsSpqrQuery,
+                           CustomGraphQLResponseProcessor responseProcessor
   ) {
     this.customerSpqrQuery = customerSpqrQuery;
     this.orderSpqrQuery = orderSpqrQuery;
     this.saleDetailsSpqrQuery = saleDetailsSpqrQuery;
+    this.responseProcessor = responseProcessor;
 
     graphQL = graphQLConfiguration.graphQLSchemaConfiguration(entitiesQueryArray());
     log.info("Generated GraphQL schema using SPQR");
@@ -66,7 +69,6 @@ public class GraphQLController {
         .context(raw)
         .build());
 
-    return executionResult.toSpecification();
+    return responseProcessor.processResponse(executionResult);
   }
-
 }

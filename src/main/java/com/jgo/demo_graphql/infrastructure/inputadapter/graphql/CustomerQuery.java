@@ -2,7 +2,7 @@ package com.jgo.demo_graphql.infrastructure.inputadapter.graphql;
 
 // import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 import com.jgo.demo_graphql.domain.model.Customer;
-import com.jgo.demo_graphql.domain.repository.mongo.CustomerRepository;
+import com.jgo.demo_graphql.domain.repository.mongo.CustomerRepositoryMongo;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class CustomerQuery { //implements GraphQLQueryResolver {
 
   @Autowired
-  private CustomerRepository customerRepository;
+  private CustomerRepositoryMongo customerRepositoryMongo;
 
   public String firstCustomerQuery() {
     return "First Customer Query Executed!";
@@ -23,12 +23,12 @@ public class CustomerQuery { //implements GraphQLQueryResolver {
   public Customer getCustomer(UUID id) {
     log.info("getCustomer in process...");
     // return customerRepository.findById(Long.valueOf(id)).get();
-    return customerRepository.findById(id).get();
+    return customerRepositoryMongo.findById(id).get();
   }
 
   public List<Customer> getAllCustomers() {
     log.info("getAllCustomers in process...");
-    return customerRepository.findAll();
+    return customerRepositoryMongo.findAll();
   }
 
 }

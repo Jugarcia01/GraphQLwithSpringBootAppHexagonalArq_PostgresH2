@@ -1,14 +1,15 @@
 package com.jgo.demo_graphql.domain.model;
 
-//import com.jgo.demoGraphQL.util.SelfValidating;
-// import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.jgo.demo_graphql.application.dto.CustomerDto;
-import com.jgo.demo_graphql.application.dto.SaleDetailsDto;
+import com.jgo.demo_graphql.infrastructure.outputadapter.relationaldb.CustomerR2db;
 import io.leangen.graphql.annotations.GraphQLQuery;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,13 +19,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -34,7 +32,6 @@ import lombok.Setter;
 @Entity
 @Table(name = "ORDERS")
 public class Order implements Serializable {
-//public class Order extends SelfValidating<Order> implements Serializable {
 
   //-- Enable when use Postgres and H2 DB
   @javax.persistence.Id
@@ -53,13 +50,16 @@ public class Order implements Serializable {
   private String description;
 
   @JsonProperty("customer")
-  @GraphQLQuery(name = "customer")
+  // @JsonBackReference
   // Many orders can be associated with one customer
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "customer_uuid")
-  private Customer customer;
+  @GraphQLQuery(name = "customer")
+  @JsonIgnoreProperties({"customer", "customer_uuid"})
+  @JoinColumn(name = "customer_uuid", referencedColumnName = "uuid")
+  private CustomerR2db customer;
 
-  @JsonProperty("saleDetails")
+  // @JsonProperty("saleDetails")
+  @JsonIgnoreProperties({"saleDetails", "order"})
   @GraphQLQuery(name = "saleDetails")
   @Column(name = "saledetails")
   // One order can have multiple sale details
@@ -71,7 +71,7 @@ public class Order implements Serializable {
   @Column(name = "totalorder")
   private BigDecimal totalOrder;
 
-  public Order addCustomer(Customer customer) {
+  public Order addCustomer(CustomerR2db customer) {
     this.customer = customer;
     return this;
   }

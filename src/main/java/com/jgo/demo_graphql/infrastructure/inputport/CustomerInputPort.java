@@ -8,14 +8,18 @@ import org.springframework.http.ResponseEntity;
 
 public interface CustomerInputPort {
 
-  public ResponseEntity<Customer> createCustomer(CustomerDto customerDto);
+  ResponseEntity<Customer> createCustomer(CustomerDto customerDto);
 
-  public ResponseEntity<Customer> getCustomerById(UUID id);
+  ResponseEntity<Customer> updateCustomer(CustomerDto customerDto);
 
-  public ResponseEntity<Customer> getCustomerByEmail(String email);
+  ResponseEntity<Customer> getCustomerById(UUID id);
 
-  public ResponseEntity<List<Customer>> getAllCustomers();
+  ResponseEntity<Customer> getCustomerByEmail(String email);
 
-  public Boolean deleteCustomerById(UUID id);
+  ResponseEntity<List<Customer>> getAllCustomers();
+
+  Boolean deleteCustomerById(UUID id);
+
+  Boolean deleteCustomerByEmail(String email);
 
 }

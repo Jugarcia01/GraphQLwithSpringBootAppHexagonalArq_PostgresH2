@@ -1,10 +1,9 @@
 package com.jgo.demo_graphql.application.usecase;
 
-import ch.qos.logback.core.encoder.EchoEncoder;
 import com.jgo.demo_graphql.application.dto.SaleDetailsDto;
 import com.jgo.demo_graphql.domain.model.Order;
 import com.jgo.demo_graphql.domain.model.SaleDetails;
-import com.jgo.demo_graphql.domain.repository.postgres.SaleDetailsRepositoryJpa;
+import com.jgo.demo_graphql.domain.repository.relational.SaleDetailsRepositoryJpa;
 import com.jgo.demo_graphql.infrastructure.inputport.SaleDetailsInputPort;
 import com.jgo.demo_graphql.infrastructure.outputport.EntityRepository;
 import com.jgo.demo_graphql.util.MapperUtil;
@@ -12,8 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,20 +22,11 @@ import static java.util.Objects.isNull;
 @Component
 public class SaleDetailsUseCase implements SaleDetailsInputPort {
 
-  // Before enable, Check in SaleDetails.java have the Mongo anotations actived: @Document, @Id
-  // private static final String REPOSITORY = "mongodbRepository";
-
-  // WARNING: If happen this Error: No property getOne found for type SaleDetails!
-  // Check in SaleDetails.java have the Postgres anotations actived: @Entity, @javax.persistence.Id
-  // Enable for H2 and Postgres
-  private static final String REPOSITORY = "postgresRepository";
-
   private EntityRepository entityRepository;
 
   private SaleDetailsRepositoryJpa saleDetailsRepositoryJpa;
 
-  @Autowired
-  public SaleDetailsUseCase(@Qualifier(REPOSITORY) EntityRepository entityRepository,
+  public SaleDetailsUseCase(EntityRepository entityRepository,
                             SaleDetailsRepositoryJpa saleDetailsRepositoryJpa) {
     this.entityRepository = entityRepository;
     this.saleDetailsRepositoryJpa = saleDetailsRepositoryJpa;
@@ -105,7 +93,7 @@ public class SaleDetailsUseCase implements SaleDetailsInputPort {
   @Override
   public ResponseEntity<List<SaleDetails>> getSaleDetailsByOrderId(Long orderId) {
     try {
-      Optional<List<SaleDetails>> foundSaleDetails = saleDetailsRepositoryJpa.findByOrder_id(orderId);
+      Optional<List<SaleDetails>> foundSaleDetails = saleDetailsRepositoryJpa.findByOrderId(orderId);
       if(!foundSaleDetails.isPresent()) {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
       }

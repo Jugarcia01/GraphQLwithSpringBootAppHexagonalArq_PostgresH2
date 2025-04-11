@@ -1,10 +1,14 @@
 package com.jgo.demo_graphql.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.jgo.demo_graphql.application.dto.OrderDto;
 import io.leangen.graphql.annotations.GraphQLQuery;
-import java.io.Serializable;
-import java.math.BigDecimal;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,11 +17,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Getter
 @Setter
@@ -61,6 +62,7 @@ public class SaleDetails implements Serializable {
     private BigDecimal discountAmount;
 
     // Many sale details can be associated with one order
+    @JsonIgnoreProperties({"order", "saleDetails"})
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     @GraphQLQuery(name = "order")

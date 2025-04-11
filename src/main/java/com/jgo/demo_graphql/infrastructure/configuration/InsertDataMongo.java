@@ -33,7 +33,7 @@ public class InsertDataMongo {
 
     log.info("Executing insertData");
     CustomerDto customer1 = CustomerDto.builder()
-        .uuid(UUID.fromString("729c5d13-261a-4b46-bb11-9af04cb2cd3e"))
+        .uuid(UUID.fromString("537fd0c4-2d15-3bc5-8932-25d4bf615b7f"))
         .email("bbunny@mail.com")
         .name("Bugs")
         .lastName("Bunny")
@@ -105,7 +105,7 @@ public class InsertDataMongo {
     /*
     log.info("Executing insertCustomers");
     Customer[] customers = {
-        new Customer(UUID.fromString("729c5d13-261a-4b46-bb11-9af04cb2cd3e"), "bbunny@mail.com", "Bugs", "Bunny"),
+        new Customer(UUID.fromString("537fd0c4-2d15-3bc5-8932-25d4bf615b7f"), "bbunny@mail.com", "Bugs", "Bunny"),
         new Customer(UUID.fromString("729c5d13-261a-4b46-bb11-9af04cb2cd3f"), "lbunny@mail.com", "Lola", "Bunny"),
         new Customer(UUID.fromString("1adfa52b-a57c-3b40-8da4-388526f6595b"), "plucas@mail.com", "Pato", "Lucas"),
         new Customer(UUID.fromString("1adfa52b-a57c-3b40-8da4-388526f6595c"), "sgonzales@mail.com", "Speedy", "Gonzales"),

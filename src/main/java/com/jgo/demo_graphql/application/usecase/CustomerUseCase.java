@@ -2,137 +2,159 @@ package com.jgo.demo_graphql.application.usecase;
 
 import com.jgo.demo_graphql.application.dto.CustomerDto;
 import com.jgo.demo_graphql.domain.model.Customer;
+import com.jgo.demo_graphql.domain.port.CustomerRepository;
 import com.jgo.demo_graphql.infrastructure.inputport.CustomerInputPort;
-import com.jgo.demo_graphql.infrastructure.outputport.EntityRepository;
+import com.jgo.demo_graphql.infrastructure.outputadapter.exception.CustomerExistsException;
+import com.jgo.demo_graphql.infrastructure.outputadapter.exception.CustomerNotFoundException;
 import com.jgo.demo_graphql.util.EmailToUUID;
-import com.jgo.demo_graphql.util.MapperUtil;
-import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpHeaders;
-import java.util.List;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import static java.util.Objects.isNull;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static com.jgo.demo_graphql.infrastructure.mapper.CustomerMapper.CUSTOMER_MAPPER;
 
 @Slf4j
 @Component
 public class CustomerUseCase implements CustomerInputPort {
 
-  // Before enable, Check in Customer.java have the Mongo anotations actived: @Document, @Id
-  // private static final String REPOSITORY = "mongodbRepository";
+  private final CustomerRepository customerRepository;
 
-  // WARNING: If happen this Error: No property getOne found for type Customer!
-  // Check in Customer.java have the Postgres anotations actived: @Entity, @javax.persistence.Id
-  // Enable for H2 and Postgres
-  private static final String REPOSITORY = "postgresRepository";
+  public CustomerUseCase(CustomerRepository customerRepository) {
+    this.customerRepository = customerRepository;
+  }
 
-  private EntityRepository entityRepository;
+  @Override
+  public ResponseEntity<Customer> getCustomerById(UUID uuid) {
+    Customer foundCustomer = customerRepository.findById(uuid);
 
-  @Autowired
-  public CustomerUseCase(@Qualifier(REPOSITORY) EntityRepository entityRepository) {
-    this.entityRepository = entityRepository;
+    if (foundCustomer == null) {
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    } else {
+      return new ResponseEntity<>(foundCustomer, HttpStatus.OK);
+    }
   }
 
   @Override
   public ResponseEntity<Customer> createCustomer(CustomerDto customerDto) {
     try {
-      MapperUtil mapperUtil = new MapperUtil(new ModelMapper());
-      Customer customer = mapperUtil.map(customerDto, Customer.class);
-      ResponseEntity<Customer> foundCustomer = getCustomerById(customer.getUuid());
-      Customer emailCustomerFound = getCustomerByEmail(customer.getEmail()).getBody();
+      Customer customer = CUSTOMER_MAPPER.toEntity(customerDto);
+      UUID uuid = EmailToUUID.generateUUID(customer.getEmail());
 
-      if (!isNull(emailCustomerFound) && !emailCustomerFound.getUuid().equals(customer.getUuid())) {
-        log.info("Already exist customer with id: " + emailCustomerFound.getUuid());
-        throw new RuntimeException(String.format("Customer already exist, check the correct Id %s",
-            emailCustomerFound.getUuid()));
-      } else {
-        if (isNull(foundCustomer.getBody())) {
-          Customer newCustomer = Customer.builder()
-              .uuid(EmailToUUID.generateUUID(customer.getEmail()))
-              .email(customer.getEmail())
-              .name(customer.getName())
-              .lastName(customer.getLastName())
-              .build();
-          entityRepository.createEntity(newCustomer);
-          log.info("New customer!.");
-          return new ResponseEntity<>(newCustomer, HttpStatus.CREATED);
-        } else {
-          Customer updateCustomer = Customer.builder()
-              .uuid(foundCustomer.getBody().getUuid())
-              .email(customer.getEmail())
-              .name(customer.getName())
-              .lastName(customer.getLastName())
-              .build();
-          entityRepository.updateEntity(updateCustomer);
-          log.info("Update customer.");
-          return new ResponseEntity<>(updateCustomer, HttpStatus.OK);
-        }
+      if (doesCustomerWithEmailExist(customer.getEmail(), uuid) || doesCustomerWithIDExist(uuid)) {
+        log.error("Customer with email: {} already exists", customer.getEmail());
+        throw new CustomerExistsException(uuid);
       }
+      return createNewCustomer(customer, uuid);
+
+    } catch (CustomerExistsException e) {
+      throw e;
     } catch (Exception e) {
-      HttpHeaders headers = new HttpHeaders();
-      headers.add("ErrorMessage", e.getMessage());
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .headers(headers)
-          .body(null);
+      log.error("Error creating customer", e);
+      throw new RuntimeException("Error creating customer: " + e.getMessage());
     }
   }
 
+  private ResponseEntity<Customer> createNewCustomer(Customer customer, UUID uuid) {
+    Customer newCustomer = new Customer(uuid,
+            customer.getEmail(),
+            customer.getName(),
+            customer.getLastName(),
+            customer.getOrders());
+    
+    Customer savedCustomer = customerRepository.save(newCustomer);
+    log.info("New customer created with id: {}.", uuid);
+
+    return ResponseEntity.status(HttpStatus.CREATED).body(savedCustomer);
+  }
+
   @Override
-  public ResponseEntity<Customer> getCustomerById(UUID uuid) {
-    try {
-      Customer foundCustomer = entityRepository.getEntityByUuid(uuid, Customer.class);
-      if (isNull(foundCustomer)) {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-      }
-      return new ResponseEntity<>(foundCustomer, HttpStatus.OK);
-    } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+  public ResponseEntity<Customer> updateCustomer(CustomerDto customerDto) {
+    Customer customer = CUSTOMER_MAPPER.toEntity(customerDto);
+    UUID uuid = customer.getUuid();
+    
+    if (uuid == null) {
+      uuid = EmailToUUID.generateUUID(customer.getEmail());
     }
 
+    if (!doesCustomerWithIDExist(uuid) && !doesCustomerWithEmailExist(customer.getEmail(), uuid)) {
+      throw new CustomerNotFoundException(customerDto.getEmail());
+    } else {
+      return updateExistingCustomer(customer, uuid);
+    }
+  }
+
+  private ResponseEntity<Customer> updateExistingCustomer(Customer customer, UUID uuid) {
+    Customer existingCustomer = customerRepository.findById(uuid);
+    
+    Customer updatedCustomer = new Customer(
+            uuid,
+            customer.getEmail(),
+            customer.getName(),
+            customer.getLastName(),
+            existingCustomer != null ? existingCustomer.getOrders() : null);
+    
+    Customer result = customerRepository.update(updatedCustomer);
+    log.info("Existing customer with id: {} updated.", uuid);
+
+    return ResponseEntity.status(HttpStatus.OK).body(result);
+  }
+
+  private boolean doesCustomerWithEmailExist(String email, UUID uuid) {
+    Customer foundCustomer = getCustomerByEmail(email).getBody();
+    return foundCustomer != null && foundCustomer.getUuid().equals(uuid);
+  }
+
+  private boolean doesCustomerWithIDExist(UUID uuid) {
+    return getCustomerById(uuid).hasBody();
   }
 
   @Override
   public ResponseEntity<Customer> getCustomerByEmail(String email) {
-    try {
-      List<Customer> foundCustomer = entityRepository.getEntityByEmail(email, Customer.class);
-      if (isNull(foundCustomer)) {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-      }
-      // TODO: Fix better answer to list, by the moment set one item!
-      return new ResponseEntity<>(foundCustomer.get(0), HttpStatus.OK);
-    } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    Customer foundCustomer = customerRepository.findByEmail(email);
 
+    if (foundCustomer == null) {
+      log.info("Don't exist a customer with email: " + email);
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    } else {
+      return ResponseEntity.status(HttpStatus.FOUND).body(foundCustomer);
+    }
   }
 
   @Override
   public ResponseEntity<List<Customer>> getAllCustomers() {
-    try {
-      List<Customer> foundCustomers = entityRepository.getAllEntities(Customer.class);
-      if (foundCustomers.isEmpty()) {
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-      }
-      return new ResponseEntity<>(foundCustomers, HttpStatus.OK);
-    } catch (Exception e) {
-      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    List<Customer> foundCustomers = Optional.ofNullable(customerRepository.findAll())
+            .orElse(Collections.emptyList());
+
+    if (foundCustomers.isEmpty()) {
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    return new ResponseEntity<>(foundCustomers, HttpStatus.OK);
   }
 
   @Override
   public Boolean deleteCustomerById(UUID uuid) {
     try {
-      entityRepository.deleteEntityById(uuid, Customer.class);
-      return true;
+      return customerRepository.deleteById(uuid);
     } catch (Exception e) {
-      return false;
+      log.error("Error deleting customer", e);
+      throw new RuntimeException("Error deleting customer: " + e.getMessage());
     }
   }
 
+  @Override
+  public Boolean deleteCustomerByEmail(String email) {
+    try {
+      return customerRepository.deleteByEmail(email);
+    } catch (Exception e) {
+      log.error("Error deleting customer by email", e);
+      throw new RuntimeException("Error deleting customer by email: " + e.getMessage());
+    }
+  }
 }

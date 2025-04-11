@@ -1,25 +1,16 @@
 package com.jgo.demo_graphql.infrastructure.configuration;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
 import javax.sql.DataSource;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.hibernate.dialect.H2Dialect;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 //-- To Enable Postgres/H2 configuration uncomment the anotation:
 @Configuration
 //--
-public class PostgresConfiguration {
+public class DataSourceR2DBConfiguration extends H2Dialect {
   @Value("${spring.datasource.url}")
   private String url;
 
